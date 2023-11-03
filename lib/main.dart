@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:glass_kit/glass_kit.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:spotimus/playlist.dart';
 
 // import 'package:english_words/english_words.dart';
 
@@ -48,49 +49,52 @@ class _SpotimusState extends State<Spotimus> {
   // String Url =
   //     "https://docs.google.com/uc?export=download&id=1ufqFOCkdZq14dmpejmWPne-TjedjAdDQ";
 
-  var songList = [
-    {
-      'Url':
-          'https://docs.google.com/uc?export=download&id=17nEpMLaSUbN3iefZ91LvROy-kRoJowZA',
-      'title': 'စဉ်းစားပါ',
-      'singer': 'လင်းလင်း',
-      'img': 'images/ab67616d0000b2738c914d3f73a7c7662de103fa.jpg'
-    },
-    {
-      'Url':
-          'https://docs.google.com/uc?export=download&id=1zzAe5CGG8MnlhtrgfjVFMca_jlshmxNe',
-      'title': 'Snowman',
-      'singer': 'Sia',
-      'img': 'images/artworks-yZBBLIq69ckS-0-t500x500.jpg'
-    },
-    {
-      'Url':
-          'https://docs.google.com/uc?export=download&id=1YIom_Sy44ATR3JgW-xGTCWTZC-hfDukt',
-      'title': 'UP',
-      'singer': 'Sean Paul',
-      'img': 'images/download (2).jpg'
-    },
-    {
-      'Url':
-          'https://docs.google.com/uc?export=download&id=1NlF3qev6FpDE269I8cbwJIQ56ojQ1e2k',
-      'title': 'Anyone',
-      'singer': 'Justin Bieber',
-      'img': 'images/artworks-MapOsRlRxYh3VL35-cKqPaQ-t500x500.jpg'
-    },
-    {
-      'Url':
-          'https://docs.google.com/uc?export=download&id=1NlF3qev6FpDE269I8cbwJIQ56ojQ1e2k',
-      'title': 'ခင်လေးစိမ်းတယ်',
-      'singer': 'ဝေလ',
-      'img': 'images/ab6761610000e5eb7376bba6fe463ea1c2812340.jpg'
-    },
-  ];
+  // var songList = [
+
+  //   {
+  //     'Url':
+  //         'https://docs.google.com/uc?export=download&id=17nEpMLaSUbN3iefZ91LvROy-kRoJowZA',
+  //     'title': 'စဉ်းစားပါ',
+  //     'singer': 'လင်းလင်း',
+  //     'img': 'images/ab67616d0000b2738c914d3f73a7c7662de103fa.jpg'
+  //   },
+  //   {
+  //     'Url':
+  //         'https://docs.google.com/uc?export=download&id=1zzAe5CGG8MnlhtrgfjVFMca_jlshmxNe',
+  //     'title': 'Snowman',
+  //     'singer': 'Sia',
+  //     'img': 'images/artworks-yZBBLIq69ckS-0-t500x500.jpg'
+  //   },
+  //   {
+  //     'Url':
+  //         'https://docs.google.com/uc?export=download&id=1YIom_Sy44ATR3JgW-xGTCWTZC-hfDukt',
+  //     'title': 'UP',
+  //     'singer': 'Sean Paul',
+  //     'img': 'images/download (2).jpg'
+  //   },
+  //   {
+  //     'Url':
+  //         'https://docs.google.com/uc?export=download&id=1NlF3qev6FpDE269I8cbwJIQ56ojQ1e2k',
+  //     'title': 'Anyone',
+  //     'singer': 'Justin Bieber',
+  //     'img': 'images/artworks-MapOsRlRxYh3VL35-cKqPaQ-t500x500.jpg'
+  //   },
+  //   {
+  //     'Url':
+  //         'https://docs.google.com/uc?export=download&id=1NlF3qev6FpDE269I8cbwJIQ56ojQ1e2k',
+  //     'title': 'ခင်လေးစိမ်းတယ်',
+  //     'singer': 'ဝေလ',
+  //     'img': 'images/ab6761610000e5eb7376bba6fe463ea1c2812340.jpg'
+  //   },
+  // ];
+
+  PlayList myPlayList = PlayList();
 
   void togglePlayPause() async {
     if (isPlaying) {
       await audioPlayer.pause();
     } else {
-      await audioPlayer.play(UrlSource(songList[currentIndex]['Url']!));
+      await audioPlayer.play(UrlSource(myPlayList.getUrl(currentIndex)));
     }
     setState(() {
       isPlaying = !isPlaying;
@@ -99,14 +103,14 @@ class _SpotimusState extends State<Spotimus> {
 
   void playCurrentSong() async {
     await audioPlayer.stop();
-    await audioPlayer.play(UrlSource(songList[currentIndex]['Url']!));
+    await audioPlayer.play(UrlSource(myPlayList.getUrl(currentIndex)));
     setState(() {
       isPlaying = true;
     });
   }
 
   void playNext() {
-    if (currentIndex < songList.length - 1) {
+    if (currentIndex < myPlayList.getUrl(currentIndex).length - 1) {
       currentIndex++;
       playCurrentSong();
     }
@@ -198,14 +202,14 @@ class _SpotimusState extends State<Spotimus> {
                   stops: const [0.0, 0.39, 0.40, 1.0],
                 ),
                 child: Image.asset(
-                  songList[currentIndex]['img']!,
+                  myPlayList.getImg(currentIndex),
                   width: 250,
                 )),
             const SizedBox(
               height: 20,
             ),
             Text(
-              songList[currentIndex]['title']!,
+              myPlayList.getTitel(currentIndex),
               // wordPair.asString,
               style: const TextStyle(fontSize: 17),
             ),
@@ -213,7 +217,7 @@ class _SpotimusState extends State<Spotimus> {
               height: 10,
             ),
             Text(
-              songList[currentIndex]['singer']!,
+              myPlayList.getSinger(currentIndex),
               style: const TextStyle(fontSize: 10),
             ),
             const SizedBox(
